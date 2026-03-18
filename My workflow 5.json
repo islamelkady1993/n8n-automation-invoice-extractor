@@ -1,0 +1,313 @@
+{
+  "name": "My workflow 5",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1_151JFDSAEYXeZ6lyq1BPlDI1CBLlmsJ",
+          "mode": "list",
+          "cachedResultName": "فاتورة",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1_151JFDSAEYXeZ6lyq1BPlDI1CBLlmsJ"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        -48
+      ],
+      "id": "32d27ccc-2106-48ab-91bc-5c2735b4d50f",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "h0KAA0kR05GfSLUH",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -304,
+        -64
+      ],
+      "id": "e955c608-aa0c-41f9-aea2-e1f9fe91d602",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "h0KAA0kR05GfSLUH",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -144,
+        -80
+      ],
+      "id": "699fac11-5c65-4fcb-ad7d-090afbdf98e3",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{\n  \"invoice_no\": \"رقم الفاتورة\",\n  \"total_amount\": 12.05,\n  \"employee_name\": \"اسم الموظف\",\n  \"date\": \"18/03/2026 01:58\"\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        -80
+      ],
+      "id": "207efafa-73b7-4803-8e70-20e18cef86e2",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        48,
+        128
+      ],
+      "id": "4b8a112d-b3b5-406a-a8a6-c4ed5575bd6e",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "q2HMJv0oeSuUE6kY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1BlRWccptO1Pr5XBT2-KYoCIwVsAEQ0yY-GZSW1IV6EA",
+          "mode": "list",
+          "cachedResultName": "فاتورة ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BlRWccptO1Pr5XBT2-KYoCIwVsAEQ0yY-GZSW1IV6EA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "الورقة1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BlRWccptO1Pr5XBT2-KYoCIwVsAEQ0yY-GZSW1IV6EA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "invoice_no": "={{ $json.output.invoice_no }}",
+            "total_amoun": "={{ $json.output.total_amount }}",
+            "employee_name": "={{ $json.output.employee_name }}",
+            "date": "={{ $json.output.date }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "invoice_no",
+              "displayName": "invoice_no",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "total_amoun",
+              "displayName": "total_amoun",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "employee_name",
+              "displayName": "employee_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        288,
+        -80
+      ],
+      "id": "0d3b931e-24f0-4b68-addd-94ffd0486085",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rexpZypy36VwTtQ0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "islamelkady1993@gmail.com",
+        "subject": "invoice",
+        "emailType": "text",
+        "message": "=invoice no :{{ $json.invoice_no }}\ntotal amount:{{ $json.total_amoun }}\nemployee name:{{ $json.employee_name }}\ndate:{{ $json.date }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        496,
+        -80
+      ],
+      "id": "b0be1d0d-db54-4a53-8c6b-3188825e6cd0",
+      "name": "Send a message",
+      "webhookId": "b60fbb6e-7370-4ba5-88eb-09b45444417d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5AUMQby9wUpOOPfB",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "4fb9bb1d-0027-4aad-a6a8-4a3f0e7984f2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "70c7b42cd4e1bce90f3493884cae34447deabffd6e82456b9edd48e7db1a83e0"
+  },
+  "id": "6jZ3PHFDdrXyPscX",
+  "tags": []
+}
